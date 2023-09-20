@@ -3,5 +3,6 @@ export type Action = {
     type: string;
     description: string;
     source: string;
-    tags: string[]
+    trigger: string;
+    tags: string[];
 }

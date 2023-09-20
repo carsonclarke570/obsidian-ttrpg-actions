@@ -15,7 +15,6 @@ export type ActionType = {
     name: string;
 }
 
-
 export const getActionType = (type: string): ActionType => {
     
     const typeString = type.toLowerCase();
@@ -66,27 +65,59 @@ export class Processor {
         )
 
         const bodyDiv = el.createDiv({ attr: { class: "action-body"}})
-        if (action.tags && action.tags.length > 0) {
-            bodyDiv.appendChild(this.createTags())
-        }
+        bodyDiv.appendChild(this.createAttributeSection(action))
 
-        if (action.source && action.source !== "") {
-            bodyDiv.appendChild(this.createSource(action.source))
-        }
-
-        bodyDiv.innerText = action.description
+        const bodyText = bodyDiv.createDiv()
+        bodyText.innerText = action.description
     }
 
-    createSource(source: string) {
-        const div = createDiv({attr: { class: "action-source"}})
+    createAttributeSection(action: Action) {
+        const showSource = (action.source && action.source.length > 0)
+        const showTags = (action.tags && action.tags.length > 0)
+        const showTrigger = action.trigger && action.trigger.length > 0
+        const showDivider = showSource || showTags || showTrigger
+
+        const metadataSection = createDiv({ attr: { class: "action-metadata"}})
+        
+        if (showTags) {
+            metadataSection.appendChild(this.createTags(action.tags))
+        }
+        
+        if (showSource) {
+            metadataSection.appendChild(this.createAttribute("Source", action.source))
+        }
+
+        if (showTrigger) {
+            metadataSection.appendChild(this.createAttribute("Trigger", action.trigger))
+        }
+
+        // if (showDivider) {
+        //     metadataSection.appendChild(createEl("hr", { attr: { class: "action-divider pathfinder"}}))
+        // }
+
+        return metadataSection
+    }
+
+    createAttribute(attr: string, val: string) {
+        const div = createDiv({attr: { class: "action-attribute"}})
+        const attrEl = createEl("b") 
+        attrEl.innerText = attr + ":"
+
+        const valEl = createDiv()
+        valEl.innerText = val
+
         div.replaceChildren(
-            createEl("b")
+            attrEl, valEl
         )
         return div;
     }
 
-    createTags() {
+    createTags(tags: string[]) {
         const div = createDiv({attr: { class: "action-tags"}})
+        for (const tag of tags) {
+            const el = div.createEl("div", { attr: { class: "action-tag" }})
+            el.innerText = tag
+        }
         return div;
     }
 

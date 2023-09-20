@@ -10,6 +10,7 @@ export default class TTRPGActionsPlugin extends Plugin {
 
 	async onload() {
 		await this.loadSettings();
+		this.app.workspace.trigger("parse-style-settings")
 
 		// This adds a settings tab so the user can configure various aspects of the plugin
 		this.addSettingTab(new TTRPGActionsSettingsTab(this.app, this));
