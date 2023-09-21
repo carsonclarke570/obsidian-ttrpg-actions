@@ -1,7 +1,9 @@
 export interface TTRPGActionsSettings {
-    actionBlockId: string 
+    actionBlockId: string;
+    useFrontmatter: boolean;
 }
 
 export const DEFAULT_SETTINGS: TTRPGActionsSettings = {
-    actionBlockId: "ttrpg-action"
+    actionBlockId: "ttrpg-action",
+    useFrontmatter: false
 }

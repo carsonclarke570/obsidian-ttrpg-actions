@@ -29,7 +29,18 @@ export class TTRPGActionsSettingsTab extends PluginSettingTab {
 					this.plugin.settings.actionBlockId = value;
 					await this.plugin.saveSettings();
                 }
+            ));
+
+        /* Use frontmatter */
+        new Setting(containerEl)
+            .setName("Parse Frontmatter")
+            .setDesc("Setting this to true will attempt to fill all `" + this.plugin.settings.actionBlockId + "` blocks with frontmatter fields. This can still be overriden by individual action blocks.")
+            .addToggle(toggle => toggle
+                .setValue(this.plugin.settings.useFrontmatter)
+                .onChange(async (value) => {
+                    this.plugin.settings.useFrontmatter = value;
+                    await this.plugin.saveSettings();
+                })
             )
-        );
     }
 }
