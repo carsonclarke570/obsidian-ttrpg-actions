@@ -1,5 +1,6 @@
 import { MarkdownPostProcessorContext, parseYaml } from "obsidian"
 import { Action } from "./types"
+import { ActionBuilder } from "./ui/action";
 
 export const ACTION_STRINGS = {
 	one: '⬻',
@@ -56,93 +57,8 @@ export class Processor {
         const action: Action = parseYaml(src)
         const actionType: ActionType = getActionType(action.type)
 
-        el.classList.add("action-block", actionType.className)
-
-        const titleDiv = el.createDiv({ attr: { class: "action-title"}})
-        titleDiv.replaceChildren(
-            this.createHeading(action, actionType),
-            this.createType(actionType)
-        )
-
-        const bodyDiv = el.createDiv({ attr: { class: "action-body"}})
-        bodyDiv.appendChild(this.createAttributeSection(action))
-
-        const bodyText = bodyDiv.createDiv()
-        bodyText.innerText = action.description
+        const builder = new ActionBuilder(el)
+        builder.build(action, actionType)
     }
-
-    createAttributeSection(action: Action) {
-        const showSource = (action.source && action.source.length > 0)
-        const showTags = (action.tags && action.tags.length > 0)
-        const showTrigger = action.trigger && action.trigger.length > 0
-        const showDivider = showSource || showTags || showTrigger
-
-        const metadataSection = createDiv({ attr: { class: "action-metadata"}})
-        
-        if (showTags) {
-            metadataSection.appendChild(this.createTags(action.tags))
-        }
-        
-        if (showSource) {
-            metadataSection.appendChild(this.createAttribute("Source", action.source))
-        }
-
-        if (showTrigger) {
-            metadataSection.appendChild(this.createAttribute("Trigger", action.trigger))
-        }
-
-        // if (showDivider) {
-        //     metadataSection.appendChild(createEl("hr", { attr: { class: "action-divider pathfinder"}}))
-        // }
-
-        return metadataSection
-    }
-
-    createAttribute(attr: string, val: string) {
-        const div = createDiv({attr: { class: "action-attribute"}})
-        const attrEl = createEl("b") 
-        attrEl.innerText = attr + ":"
-
-        const valEl = createDiv()
-        valEl.innerText = val
-
-        div.replaceChildren(
-            attrEl, valEl
-        )
-        return div;
-    }
-
-    createTags(tags: string[]) {
-        const div = createDiv({attr: { class: "action-tags"}})
-        for (const tag of tags) {
-            const el = div.createEl("div", { attr: { class: "action-tag" }})
-            el.innerText = tag
-        }
-        return div;
-    }
-
-    createHeading(action: Action, actionType: ActionType) {
-        const div = createDiv({attr: { class: "action-heading"}})
-        div.appendChild(this.createIcon(actionType))
-        div.appendChild(this.createName(action.name))
-        return div
-    }
-
-    createName(name: string) {
-        const nameDiv = createEl("b", {attr: { class: "action-name"}})
-        nameDiv.innerText = name
-        return nameDiv
-    }
-
-    createIcon(actionType: ActionType) {
-        const iconDiv = createDiv({attr: { class: `action-icon ${actionType.className}`}})
-        iconDiv.innerText = actionType.icon
-        return iconDiv
-    }
-
-    createType(actionType: ActionType) {
-        const typeDiv = createEl("i", {attr: { class: `action-type ${actionType.className}`}})
-        typeDiv.innerText = actionType.name
-        return typeDiv
-    }
+    
 }

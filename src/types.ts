@@ -6,3 +6,9 @@ export type Action = {
     trigger: string;
     tags: string[];
 }
+
+export type ActionType = {
+    className: string;
+    icon: string;
+    name: string;
+}

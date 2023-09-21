@@ -1,11 +1,11 @@
-import { App, Modal, Plugin } from 'obsidian';
+import { Plugin } from 'obsidian';
 import { Processor } from 'src/processor';
-import { DEFAULT_SETTINGS } from 'src/settings';
+import { DEFAULT_SETTINGS, TTRPGActionsSettings } from 'src/settings';
 import { TTRPGActionsSettingsTab } from 'src/ui/settingsTab';
 
 
 export default class TTRPGActionsPlugin extends Plugin {
-	settings: TTRPGActionsSettingsTab;
+	settings: TTRPGActionsSettings;
 	processor: Processor
 
 	async onload() {
@@ -33,21 +33,5 @@ export default class TTRPGActionsPlugin extends Plugin {
 
 	async saveSettings() {
 		await this.saveData(this.settings);
-	}
-}
-
-class SampleModal extends Modal {
-	constructor(app: App) {
-		super(app);
-	}
-
-	onOpen() {
-		const {contentEl} = this;
-		contentEl.setText('Woah!');
-	}
-
-	onClose() {
-		const {contentEl} = this;
-		contentEl.empty();
 	}
 }
