@@ -57,6 +57,7 @@ export class ActionBuilder {
         const showSource = action.source && action.source.length > 0
         const showTags = action.tags && action.tags.length > 0
         const showTrigger = action.trigger && action.trigger.length > 0
+        const showReqs = action.requirements && action.requirements.length > 0
         // const showDivider = showSource || showTags || showTrigger
 
         const metadataSection = createDiv({ attr: { class: "action-metadata"}})
@@ -67,6 +68,10 @@ export class ActionBuilder {
         
         if (showSource) {
             metadataSection.appendChild(this.createAttribute("Source", action.source))
+        }
+
+        if (showReqs) {
+            metadataSection.appendChild(this.createAttribute("Requirements", action.source))
         }
 
         if (showTrigger) {

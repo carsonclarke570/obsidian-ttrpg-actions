@@ -31,6 +31,19 @@ export class TTRPGActionsSettingsTab extends PluginSettingTab {
                 }
             ));
 
+        /* Action List ID */
+        new Setting(containerEl)
+			.setName("Action List Identifier")
+			.setDesc("Use this to identify a codeblock for TTRPG Actions to parse.")
+			.addText(text => text
+				.setPlaceholder(DEFAULT_SETTINGS.actionListId)
+				.setValue(this.plugin.settings.actionListId)
+				.onChange(async (value) => {
+					this.plugin.settings.actionListId = value;
+					await this.plugin.saveSettings();
+                }
+            ));
+
         /* Use frontmatter */
         new Setting(containerEl)
             .setName("Parse Frontmatter")

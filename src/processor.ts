@@ -1,13 +1,15 @@
 import { MarkdownPostProcessorContext, parseYaml } from "obsidian"
-import { Action } from "./types"
+import { Action, ActionQuery } from "./types"
 import { ActionBuilder } from "./ui/action";
+import { TTRPGActionsSettings } from "./settings";
+import { Indexer } from "./indexer";
 
 export const ACTION_STRINGS = {
-	one: '⬻',
-	two: '⬺',
-	three: '⬽',
-	reaction: '⬲',
-	free: '⭓'
+    one: '⬻',
+    two: '⬺',
+    three: '⬽',
+    reaction: '⬲',
+    free: '⭓'
 }
 
 export type ActionType = {
@@ -17,7 +19,6 @@ export type ActionType = {
 }
 
 export const getActionType = (type: string): ActionType => {
-    
     const typeString = type.toLowerCase();
     if (typeString === "action") {
         return {
@@ -51,14 +52,68 @@ export const getActionType = (type: string): ActionType => {
     }
 }
 
-export class Processor {
+export class ListProcessor {
+    settings: TTRPGActionsSettings
+    indexer: Indexer
+
+    constructor(settings: TTRPGActionsSettings, indexer: Indexer) {
+        this.settings = settings;
+        this.indexer = indexer;
+    }
 
     process(src: string, el: HTMLElement, ctx: MarkdownPostProcessorContext): void {
-        const action: Action = parseYaml(src)
-        const actionType: ActionType = getActionType(action.type)
+        el.classList.add("action-list")
+        const query: ActionQuery = parseYaml(src)
+
+        
+
+        const getActions = async () => {
+            
+            if (query?.tags) {
+                return await this.indexer.getActionsByTags(query.tags)
+            }
+
+            return await this.indexer.getActions()
+        }
+
+
+        getActions().then((actions) => {
+            console.log(actions)
+            actions.forEach(action => {
+                const rootElement = el.createDiv()
+                const builder = new ActionBuilder(rootElement)
+                const actionType = getActionType(action.type)
+
+                builder.build(action, actionType)
+            })
+        })
+    }
+}
+
+export class BlockProcessor {
+
+    settings: TTRPGActionsSettings
+
+    constructor(settings: TTRPGActionsSettings) {
+        this.settings = settings;
+    }
+
+    process(src: string, el: HTMLElement, ctx: MarkdownPostProcessorContext): void {
 
         const builder = new ActionBuilder(el)
-        builder.build(action, actionType)
-    }
+
+        const hasFrontMatter = ctx?.frontmatter?.[this.settings.actionBlockId] ?? false
+        if (this.settings.useFrontmatter && hasFrontMatter) {
+            const action: Action = ctx.frontmatter[this.settings.actionBlockId]
+            const actionType = getActionType(action.type)
+            
+            builder.build(action, actionType)
+        } else {
+            const action: Action = parseYaml(src)
+            const actionType: ActionType = getActionType(action.type)
+
+            builder.build(action, actionType)
+        }
     
+    }
 }
